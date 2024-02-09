@@ -37,14 +37,14 @@ def chargement_seed(numero_partie): #2.1 #récupere le chiffre de la patie pour 
 
 def get_pokemon_data(idPokemon_gen): #2.2 #fais l'appel à l'API pour récupérer les images des pokemons
     global images_pokemon
-    url = "https://pokebuildapi.fr/api/v1/pokemon/"
+    url = "https://tyradex.vercel.app/api/v1/pokemon"
 
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
         for pokemon in data:
             if pokemon['pokedexId'] == idPokemon_gen:  # recherche dans le pokedexId l'id qu'on génère
-                lien_image = pokemon['image']
+                lien_image = pokemon['sprites']['regular'] #ajouter logique shiny
                 images_pokemon.append(lien_image)   
                 print(lien_image, pokemon['name'])
     else:
