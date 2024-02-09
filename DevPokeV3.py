@@ -32,7 +32,7 @@ def demarrage_seed(numeroUser): #2 #récupère les idPokemon et les envoi à get
 
 def chargement_seed(numero_partie): #2.1 #récupere le chiffre de la patie pour en faire une seed faussement aleatoire pour selectrionner les pokemons
     random.seed(numero_partie) 
-    chiffres_aleatoires = [random.randint(0, 800) for _ in range(25)]  
+    chiffres_aleatoires = [random.randint(0, 1010) for _ in range(25)]  
     return chiffres_aleatoires #r'envoi les id des pokemon à demarrage_seed
 
 def get_pokemon_data(idPokemon_gen): #2.2 #fais l'appel à l'API pour récupérer les images des pokemons
