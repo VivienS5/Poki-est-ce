@@ -42,9 +42,17 @@ def get_pokemon_data(idPokemon_gen): #2.2 #fais l'appel à l'API pour récupére
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
+        lien_image = ""
         for pokemon in data:
             if pokemon['pokedexId'] == idPokemon_gen:  # recherche dans le pokedexId l'id qu'on génère
-                lien_image = pokemon['sprites']['regular'] #ajouter logique shiny
+                is_shiny = random.randint(0, 3)
+                if is_shiny == 0 :
+                    if pokemon['sprites']['shiny'] == None :
+                        lien_image = pokemon['sprites']['regular']
+                    else : 
+                        lien_image = pokemon['sprites']['shiny']
+                else :
+                    lien_image = pokemon['sprites']['regular']
                 images_pokemon.append(lien_image)   
                 print(lien_image, pokemon['name'])
     else:
