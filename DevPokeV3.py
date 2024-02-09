@@ -10,8 +10,8 @@ import random
 pygame.init()
 
 # Définition de la taille de l'écran
-SCREEN_WIDTH = 560
-SCREEN_HEIGHT = 560
+SCREEN_WIDTH = 840
+SCREEN_HEIGHT = 840
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Devipoke')
 screen.fill("lightgray")
@@ -50,28 +50,45 @@ def get_pokemon_data(idPokemon_gen): #2.2 #fais l'appel à l'API pour récupére
     else:
         raise Exception(f"Failed to retrieve data. Status code: {response.status_code}")
 
-def drawImage(image_url, index): #3.1 #dessine les images des pokemons // j'ai demander à gpt de nettoyer ton code alors tu t'embrouilles avec lui :3
-    # Define initial positions
-    x = 10
-    y = 10
-    
+def drawImage(image_url, index): #3.1 #dessine les images des pokemons
+    # Define initial positions with additional spacing
+    x_start = 15  # Début de la ligne
+    y_start = 15  # Début en hauteur
+    spacing = 15  # Espacement entre les carrés
+
     # Calculate x position based on index
     x_offset = index % 5
-    if x_offset != 0:
-        x = 110 * x_offset
+    x = x_start + (150 + spacing) * x_offset
     
     # Calculate y position based on index
     y_offset = index // 5
-    if y_offset != 0:
-        y = 110 * y_offset
+    y = y_start + (150 + spacing) * y_offset
+    
+    # Draw blue square
+    pygame.draw.rect(screen, "lightblue", (x, y, 150, 150))
     
     # Fetch the image from the URL
     image_response = requests.get(image_url)
     img_poke = pygame.image.load(BytesIO(image_response.content))
-    img_poke = pygame.transform.scale(img_poke, (100, 100))
+    img_poke = pygame.transform.scale(img_poke, (150, 150))
     
     # Blit the image onto the screen
     screen.blit(img_poke, (x, y)) # Afficher l'image à la position actuelle
+
+def selectPokemonAlea(): #3.2 #selectionne une case aléatoire et en fait le pokemon du joueur
+    pokeJoueur = random.randrange(1, 25)
+    print(pokeJoueur)
+
+    # Déterminez les coordonnées de la case aléatoire sur la grille 5x5
+    row = (pokeJoueur - 1) // 5
+    col = (pokeJoueur - 1) % 5
+
+    # Calcul des coordonnées du coin supérieur gauche du rectangle du joueur
+    rect_x = 15 + (150 + 15) * col
+    rect_y = 15 + (150 + 15) * row
+
+    # Dessiner le rectangle du joueur à ces coordonnées
+    pygame.draw.rect(screen, "blue", (rect_x, rect_y, 150, 150), 5)
 
 def game(): #3 #Affichage de l'ecran de jeu
     running = True
@@ -82,7 +99,9 @@ def game(): #3 #Affichage de l'ecran de jeu
         drawImage(url_image_poke, nb_image)
         pygame.display.flip()
         nb_image += 1
-        
+
+    selectPokemonAlea()   
+
     while running:
         pygame.display.flip()
         for event in pygame.event.get():
@@ -92,7 +111,7 @@ def game(): #3 #Affichage de l'ecran de jeu
 def start_menu(): #1 & 3 #Menu début de partie
     global numero_partie
 
-    menu = pygame_menu.Menu('Welcome', 560, 560, theme=pygame_menu.themes.THEME_BLUE)
+    menu = pygame_menu.Menu("WHO'S THAT POKEMON", SCREEN_WIDTH, SCREEN_HEIGHT, theme=pygame_menu.themes.THEME_ORANGE)
 
     text_input = menu.add.text_input('Numero de partie :', default='')
     
@@ -100,9 +119,9 @@ def start_menu(): #1 & 3 #Menu début de partie
         texte_entree = text_input.get_value()
         demarrage_seed(texte_entree)
         print("Done fetching api")
+        game()
 
-    menu.add.button('Validation', on_button_click) 
-    menu.add.button('Play', game) 
+    menu.add.button('Play', on_button_click) 
     menu.add.button('Quit', pygame_menu.events.EXIT)
 
     menu.mainloop(screen)
