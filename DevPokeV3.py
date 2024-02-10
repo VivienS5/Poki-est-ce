@@ -4,8 +4,6 @@ import requests
 from io import BytesIO
 import random
 
-# Ici je fais qu'un appel à l'api pour récupérer tout le putain de pokedex
-
 # Initialisation de pygame
 pygame.init()
 
@@ -32,10 +30,10 @@ def demarrage_seed(numeroUser): #2 #récupère les idPokemon et les envoi à get
 
 def chargement_seed(numero_partie): #2.1 #récupere le chiffre de la patie pour en faire une seed faussement aleatoire pour selectrionner les pokemons
     random.seed(numero_partie) 
-    chiffres_aleatoires = [random.randint(0, 1010) for _ in range(25)]  
+    chiffres_aleatoires = [random.randint(0, 1010) for _ in range(4)]  
     return chiffres_aleatoires #r'envoi les id des pokemon à demarrage_seed
 
-def get_pokemon_data(idPokemon_gen): #2.2 #fais l'appel à l'API pour récupérer les images des pokemons
+def get_pokemon_data(idPokemon_gen): 
     global images_pokemon
     url = "https://tyradex.vercel.app/api/v1/pokemon"
 
@@ -44,21 +42,19 @@ def get_pokemon_data(idPokemon_gen): #2.2 #fais l'appel à l'API pour récupére
         data = response.json()
         lien_image = ""
         for pokemon in data:
-            if pokemon['pokedexId'] == idPokemon_gen:  # recherche dans le pokedexId l'id qu'on génère
-                is_shiny = random.randint(0, 3)
-                if is_shiny == 0 :
-                    if pokemon['sprites']['shiny'] == None :
-                        lien_image = pokemon['sprites']['regular']
-                    else : 
-                        lien_image = pokemon['sprites']['shiny']
-                else :
+            if pokemon['pokedexId'] == idPokemon_gen:  
+                is_shiny = random.randint(0, 3) == 0  # 1 chance sur 4 d'être shiny
+                if is_shiny and pokemon['sprites']['shiny']:
+                    lien_image = pokemon['sprites']['shiny']
+                else:
                     lien_image = pokemon['sprites']['regular']
-                images_pokemon.append(lien_image)   
-                print(lien_image, pokemon['name'])
+                images_pokemon.append((lien_image, is_shiny))  # Ajouter is_shiny à la liste des images
+                print(lien_image, pokemon['name'], "Shiny:", is_shiny)  # Afficher si le Pokémon est shiny
     else:
         raise Exception(f"Failed to retrieve data. Status code: {response.status_code}")
 
-def drawImage(image_url, index): #3.1 #dessine les images des pokemons
+
+def drawImage(image_url, index, is_shiny=False): #3.1 #dessine les images des pokemons
     # Define initial positions with additional spacing
     x_start = 15  # Début de la ligne
     y_start = 15  # Début en hauteur
@@ -76,14 +72,23 @@ def drawImage(image_url, index): #3.1 #dessine les images des pokemons
     pygame.draw.rect(screen, "lightblue", (x, y, 150, 150))
     
     # Fetch the image from the URL
-    image_response = requests.get(image_url)
-    img_poke = pygame.image.load(BytesIO(image_response.content))
-    img_poke = pygame.transform.scale(img_poke, (150, 150))
-    
-    # Blit the image onto the screen
-    screen.blit(img_poke, (x, y)) # Afficher l'image à la position actuelle
+    if image_url:  # Vérifier si l'URL de l'image est valide
+        image_response = requests.get(image_url)
+        img_poke = pygame.image.load(BytesIO(image_response.content))
+        img_poke = pygame.transform.scale(img_poke, (150, 150))
+
+        # Blit the image onto the screen
+        screen.blit(img_poke, (x, y))
+
+        if is_shiny:  # Si le Pokémon est shiny
+            # Dessiner une étoile jaune en haut à droite
+            star_size = 15
+            star_color = (255, 255, 0)  # Jaune
+            star_center = (x + 150 - star_size // 2, y + star_size // 2)
+            draw_star(screen, star_color, star_center, star_size)
 
 def selectPokemonAlea(): #3.2 #selectionne une case aléatoire et en fait le pokemon du joueur
+    random.seed()
     pokeJoueur = random.randrange(1, 25)
     print(pokeJoueur)
 
@@ -103,18 +108,66 @@ def game(): #3 #Affichage de l'ecran de jeu
     print("Lancement de la partie...")
     screen.fill("lightgray")
     nb_image = 0
-    for url_image_poke in images_pokemon:
-        drawImage(url_image_poke, nb_image)
+    for image_data in images_pokemon:
+        image_url, is_shiny = image_data  # Extraire l'URL de l'image et l'indicateur shiny
+        drawImage(image_url, nb_image, is_shiny)  # Passer l'URL de l'image et l'indicateur shiny à drawImage
         pygame.display.flip()
         nb_image += 1
 
     selectPokemonAlea()   
-
+    dessin()
     while running:
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+
+def dessin(): #3.3 #permet de dessiner
+    running = True
+    drawing = False
+    pixels_rouges = [] 
+    fond_origine = screen.copy()  # Capture du fond d'écran d'origine
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                drawing = True
+            elif event.type == pygame.MOUSEBUTTONUP:
+                drawing = False
+            elif event.type == pygame.MOUSEMOTION and drawing:
+                pos = pygame.mouse.get_pos()  
+                if 0 <= pos[0] < SCREEN_WIDTH and 0 <= pos[1] < SCREEN_HEIGHT:  # Vérifier si la position est à l'intérieur des limites de la fenêtre
+                    couleur_origine = screen.get_at(pos) 
+                    pygame.draw.circle(screen, (255, 0, 0), pos, 3)  
+                    pixels_rouges.append((pos, couleur_origine))  
+                    pygame.display.flip() 
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_c: 
+                    screen.blit(fond_origine, (0, 0)) 
+                    pygame.display.flip()  
+                    pixels_rouges = []  
+
+        pygame.display.update()
+
+
+def draw_star(surface, color, center, size):
+    # Définir les points de l'étoile
+    outer_points = [
+        (center[0], center[1] - size),  # point supérieur
+        (center[0] + size * 0.3, center[1] - size * 0.3),  # point supérieur droit
+        (center[0] + size, center[1]),  # point droit
+        (center[0] + size * 0.3, center[1] + size * 0.3),  # point inférieur droit
+        (center[0], center[1] + size),  # point inférieur
+        (center[0] - size * 0.3, center[1] + size * 0.3),  # point inférieur gauche
+        (center[0] - size, center[1]),  # point gauche
+        (center[0] - size * 0.3, center[1] - size * 0.3)  # point supérieur gauche
+    ]
+
+    # Dessiner l'étoile en reliant les points
+    pygame.draw.polygon(surface, color, outer_points)
 
 def start_menu(): #1 & 3 #Menu début de partie
     global numero_partie
