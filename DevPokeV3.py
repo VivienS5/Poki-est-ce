@@ -84,6 +84,7 @@ def drawImage(image_url, index): #3.1 #dessine les images des pokemons
     screen.blit(img_poke, (x, y)) # Afficher l'image à la position actuelle
 
 def selectPokemonAlea(): #3.2 #selectionne une case aléatoire et en fait le pokemon du joueur
+    random.seed() 
     pokeJoueur = random.randrange(1, 25)
     print(pokeJoueur)
 
