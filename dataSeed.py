@@ -12,6 +12,7 @@ class DataSeed:
             print("Résultats :", resultats_seed_alea)
             for idPokemon_gen in resultats_seed_alea:
                 images_pokemon.extend(getPokemonData(idPokemon_gen))
+                print(images_pokemon)
             return images_pokemon
         else:
             print("Le champ du numéro de partie est vide.")
@@ -30,11 +31,13 @@ def getPokemonData(idPokemon_gen):
         for pokemon in data:
             if pokemon['pokedexId'] == idPokemon_gen:  
                 is_shiny = random.randint(0, 3) == 0
+                name_pokemon = pokemon['name']['fr']
+                print(name_pokemon)
                 if is_shiny and pokemon['sprites']['shiny']:
                     lien_image = pokemon['sprites']['shiny']
                 else:
                     lien_image = pokemon['sprites']['regular']
-                pokemon_data.append((lien_image, is_shiny))
+                pokemon_data.append((lien_image, is_shiny, name_pokemon))
         return pokemon_data
     else:
         raise Exception(f"Failed to retrieve data. Status code: {response.status_code}")

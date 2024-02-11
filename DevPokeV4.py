@@ -1,7 +1,7 @@
 import pygame
 import pygame_menu
 
-from pokemonImage import PokemonImage
+from pokemonImage import PokemonImage, pokemon_coordinates
 from pokemonJoueur import PokemonJoueur
 from dataSeed import DataSeed
 from paint import Paint
@@ -23,10 +23,11 @@ def game(images_pokemon):
     
     PokemonJoueur.selectPokemonAlea(screen) #selectionne une case aléatoire et en fait le pokemon du joueur
     
-    for index, (image_url, is_shiny) in enumerate(images_pokemon):
-        PokemonImage.drawPokemon(screen, image_url, index, is_shiny) #Dessine les pokemons sur l'écran
+    for index, (image_url, is_shiny, name_pokemon) in enumerate(images_pokemon):
+        print("------------", image_url, name_pokemon, "------------")
+        PokemonImage.drawPokemon(screen, image_url, index, is_shiny, name_pokemon) #Dessine les pokemons sur l'écran
 
-    Paint.paint(screen, SCREEN_WIDTH, SCREEN_HEIGHT) #Appel de la fonction paint de la classe Paint pour pouvoir dessiner dans le jeu
+    Paint.paint(screen, SCREEN_WIDTH, SCREEN_HEIGHT, pokemon_coordinates, running=True) #Appel de la fonction paint de la classe Paint pour pouvoir dessiner dans le jeu
 
     while running:
         pygame.display.flip()

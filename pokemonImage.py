@@ -3,10 +3,12 @@ import requests
 from io import BytesIO
 
 from dessinEtoiles import dessinEtoile
+from paint import Paint
 
+pokemon_coordinates = []
 class PokemonImage:
     @staticmethod
-    def drawPokemon(screen, image_url, index, is_shiny=False):
+    def drawPokemon(screen, image_url, index, is_shiny=False, name_pokemon=""):
         x_start = 15  # Début de la ligne
         y_start = 15  # Début en hauteur
         spacing = 15  # Espacement entre les carrés
@@ -23,6 +25,11 @@ class PokemonImage:
             image_response = requests.get(image_url)
             img_poke = pygame.image.load(BytesIO(image_response.content))
             img_poke = pygame.transform.scale(img_poke, (150, 150))
+
+            coo_pokemon = (x, y, 150, 150)
+            pokemon_coordinates.append((name_pokemon, coo_pokemon))
+            print("pokemon_coordinates:", pokemon_coordinates)
+
             screen.blit(img_poke, (x, y))
 
             if is_shiny:
@@ -31,4 +38,7 @@ class PokemonImage:
                 star_center = (x + 150 - star_size // 2, y + star_size // 2)
                 etoile = dessinEtoile() #Utilise la classe Etoile pour dessiner l'étoile
                 etoile.drawStar(screen, star_color, star_center, star_size)
+        
+        Paint.paint(screen, ..., ..., ..., running=False)
         pygame.display.flip()
+        
