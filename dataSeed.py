@@ -29,7 +29,7 @@ def getPokemonData(idPokemon_gen):
         data = response.json()
         pokemon_data = []
         for pokemon in data:
-            if pokemon['pokedexId'] == idPokemon_gen:  
+            if pokemon['pokedex_id'] == idPokemon_gen:  
                 is_shiny = random.randint(0, 3) == 0
                 name_pokemon = pokemon['name']['fr']
                 height = pokemon['height']
