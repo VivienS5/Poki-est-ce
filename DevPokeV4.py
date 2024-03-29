@@ -5,6 +5,7 @@ from pokemonImage import PokemonImage, pokemon_coordinates
 from pokemonJoueur import PokemonJoueur
 from dataSeed import DataSeed
 from paint import Paint
+import threading
 
 # Initialisation de pygame
 pygame.init()
@@ -18,15 +19,21 @@ screen.fill("lightgray")
 
 def game(images_pokemon):
     running = True
+    threads = []
     print("Lancement de la partie...")
     screen.fill("lightgray")
     
     PokemonJoueur.selectPokemonAlea(screen) #selectionne une case aléatoire et en fait le pokemon du joueur
     
     for index, (image_url, is_shiny, name_pokemon, height, weight, imgType) in enumerate(images_pokemon):
-        # print("------------", image_url, name_pokemon, "------------")
-        PokemonImage.drawPokemon(screen, image_url, index, is_shiny, name_pokemon, height, weight, imgType) #Dessine les pokemons sur l'écran
-
+        # Créer un thread pour chaque Pokémon et lancer le dessin en parallèle
+        threadDessinPoke = threading.Thread(target=dessinPoke, args=(image_url, index, is_shiny, name_pokemon, height, weight, imgType))
+        threads.append(threadDessinPoke)
+        threadDessinPoke.start()  # Démarrer le thread
+    
+    for threadDessinPoke in threads:
+        threadDessinPoke.join()  # Attendre la fin de tous les threads
+    
     Paint.paint(screen, SCREEN_WIDTH, SCREEN_HEIGHT, pokemon_coordinates, running=True) #Appel de la fonction paint de la classe Paint pour pouvoir dessiner dans le jeu
 
     while running:
@@ -35,6 +42,8 @@ def game(images_pokemon):
             if event.type == pygame.QUIT:
                 running = False
                 
+def dessinPoke(image_url, index, is_shiny, name_pokemon, height, weight, imgType):
+    PokemonImage.drawPokemon(screen, image_url, index, is_shiny, name_pokemon, height, weight, imgType)
 
 def start_menu(): #1 & 3 #Menu début de partie
 

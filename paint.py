@@ -6,7 +6,7 @@ class Paint:
     def paint(screen, SCREEN_WIDTH, SCREEN_HEIGHT, pokemon_coordinates, running = False):
 
         drawing = False
-        mod_draw = False
+        mod_draw = True
         pixels_rouges = [] 
         fond_origine = screen.copy()  # Capture du fond d'écran d'origine
 
