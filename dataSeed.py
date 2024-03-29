@@ -1,6 +1,9 @@
 import random
 import requests
 
+from config import NBR_POKEMON
+
+
 class DataSeed:
     @staticmethod
     def demarrageSeed(numeroUser):
@@ -49,5 +52,5 @@ class DataSeed:
 
 def chargementSeed(numero_partie):
     random.seed(numero_partie) 
-    chiffres_aleatoires = [random.randint(0, 1010) for _ in range(25)]  
+    chiffres_aleatoires = [random.randint(0, 1010) for _ in range(NBR_POKEMON)]  
     return chiffres_aleatoires

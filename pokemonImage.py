@@ -2,6 +2,8 @@ import pygame
 import requests
 from io import BytesIO
 
+from config import NBR_POKEMON
+
 from dessinEtoiles import dessinEtoile
 from paint import Paint
 
@@ -13,10 +15,10 @@ class PokemonImage:
         y_start = 15  # Début en hauteur
         spacing = 15  # Espacement entre les carrés
 
-        x_offset = index % 5
+        x_offset = index % (NBR_POKEMON // 5)
         x = x_start + (150 + spacing) * x_offset
         
-        y_offset = index // 5
+        y_offset = index // (NBR_POKEMON // 5)
         y = y_start + (150 + spacing) * y_offset
         
         pygame.draw.rect(screen, "lightblue", (x, y, 150, 150))

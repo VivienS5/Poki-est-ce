@@ -7,12 +7,10 @@ from dataSeed import DataSeed
 from paint import Paint
 import threading
 
+from config import SCREEN_WIDTH, SCREEN_HEIGHT
 # Initialisation de pygame
 pygame.init()
 
-# Définition de la taille de l'écran
-SCREEN_WIDTH = 840
-SCREEN_HEIGHT = 840
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Devipoke')
 screen.fill("lightgray")
