@@ -1,18 +1,30 @@
 import random
 import requests
+import threading
 
 class DataSeed:
     @staticmethod
-    def demarrageSeed(numeroUser): #2 #récupère les idPokemon et les envoi à get_pokemon_data pour faire la request api
+    def demarrageSeed(numeroUser): #2 #récupère les idPokemon et les envoi à getPokemonData pour faire la request api
+
         global numero_partie
         images_pokemon = []
+
         if numeroUser:  # Vérifier si le texte d'entrée n'est pas vide
             numero_partie = int(numeroUser)
             resultats_seed_alea = chargementSeed(numero_partie)
+            
             # print("Résultats :", resultats_seed_alea)
             for idPokemon_gen in resultats_seed_alea:
-                images_pokemon.extend(getPokemonData(idPokemon_gen))
+                threads = []
+                threadData = threading.Thread(target=lambda: images_pokemon.extend(getPokemonData(idPokemon_gen)))
+                threads.append(threadData)
+                threadData.start() 
+                
                 # print(images_pokemon)
+
+            for threadData in threads:
+                threadData.join()  # Attendre la fin de tous les threads
+
             return images_pokemon
         else:
             print("Le champ du numéro de partie est vide.")
