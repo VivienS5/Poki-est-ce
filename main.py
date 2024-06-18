@@ -12,7 +12,7 @@ from config import SCREEN_WIDTH, SCREEN_HEIGHT
 pygame.init()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption('Devipoke')
+pygame.display.set_caption('Poki est ce')
 screen.fill("lightgray")
 
 def game(images_pokemon):
@@ -45,7 +45,7 @@ def dessinPoke(image_url, index, is_shiny, name_pokemon, height, weight, imgType
 
 def start_menu(): #1 & 3 #Menu début de partie
 
-    menu = pygame_menu.Menu("WHO'S THAT POKEMON", SCREEN_WIDTH, SCREEN_HEIGHT, theme=pygame_menu.themes.THEME_ORANGE)
+    menu = pygame_menu.Menu("POKI EST CE", SCREEN_WIDTH, SCREEN_HEIGHT, theme=pygame_menu.themes.THEME_ORANGE)
 
     text_input = menu.add.text_input('Numero de partie :', default='', valid_chars=[0,1,2,3,4,5,6,7,8,9])
     
